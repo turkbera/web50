@@ -6,20 +6,24 @@
     </head>
     <body>
         <div class = "mainSearch">
-            <div class = roundedBar>
-                <form action="https://www.google.com/search">
+            <form action="https://www.google.com/search">
+                <div class = roundedBar>
                     <input type="text" class = roundedBar2 name="q">
-                </form>
+                </div>
+                <div class = submitButton>
+                    <input type="submit" class = submitButton2 value="Google Search">
+                    <form action="https://www.google.com/doodles">
+                        <input type="submit" class = submitButton2 value="I may be lucky!">
+                    </form>
+                </div>
+            </form>
+            <div class = "logo">
+                <img src= "../search/googleLogo.png" alt="Google Logo">
             </div>
-            <div class = submitBut>
-                <form action="https://www.google.com/search">
-                    <input type="submit" class = submitBut2 value="Google Search">
-                </form>
-            </div>
-            
         </div>
-        <div class = "logo">
-            <img src= "../search/googleLogo.png" alt=" Google Logo">
+        <div class = "buttonContainer" >
+            <a href="images.html" class="images"> Google Images</a>
+            <a href="advanced.html" class="advanced"> Advanced Search</a>
         </div>
     </body>
 </html>
