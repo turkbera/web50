@@ -1,6 +1,35 @@
+
 .mainSearch {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  flex-direction: column;
   }
+.roundedBar{
+  border-radius: 3000px; 
+  padding: 10px;
+  outline: none;
+}
+.roundedBar2{
+    border-radius: 30px; 
+    width: 600px;
+    height: 25px;
+  }
+.submitBut {
+    border-radius: 15px;
+    padding: 10px;
+    outline: none;
+  }
+.submitBut2 {
+    border-radius: 15px;
+  }
+
+.logo{
+  display: flex;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 200px;
+}
