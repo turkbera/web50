@@ -5,17 +5,41 @@
   align-items: center;
   height: 100vh;
   flex-direction: column;
+  font-family: arial,sans-serif;
+  font-size: 14px;
+
   }
 .roundedBar{
-  border-radius: 3000px; 
-  padding: 10px;
-  outline: none;
+  justify-content: center;
+  border-radius: 30px; 
+  width: 600px;
+  background-color: transparent;
+  border: 0.5px;
+  margin: 10;
+padding: 0;
+    color: rgba(0,0,0,.87);
+    word-wrap: break-word;
+    outline: none;
+    display: flex;
+    -webkit-tap-highlight-color: transparent;
+  
 }
 .roundedBar2{
-    border-radius: 30px; 
-    width: 480px;
-    height: 25px;
+    display: flex;
+    min-height: 44px;
+    background: #fff;
+    border: 1px solid #dfe1e5;
+    box-shadow: none;
+    border-radius: 24px;
+    width: 6380px;
+    max-width: 584px;
+    font-size: 16px;
   }
+.roundedBar2:hover{
+    background-color: #fff;
+    box-shadow: 0 1px 6px rgba(32,33,36,.28);
+    border-color:  1px solid #dfe1e5;
+}
 .submitButton {
     justify-content: center;
     display: flex;
@@ -25,14 +49,30 @@
   }
 .submitButton2 {
     justify-content: center;
-    border-radius: 15px;
-    margin-right: 10px;
+    background-color: #f8f9fa;
+    border: 1px solid #f8f9fa;
+    border-radius: 4px;
+    color: #3c4043;
+    font-family: arial,sans-serif;
+    font-size: 14px;
+    margin: 11px 4px;
+    padding: 0 16px;
+    line-height: 27px;
+    height: 36px;
+    min-width: 54px;
+    text-align: center;
+    cursor: pointer;
   }
-
+.submitButton2:hover{
+    box-shadow: 0 1px 1px rgba(0,0,0,.1);
+    background-color: #f8f9fa;
+    border: 1px solid #dadce0;
+    color: #202124;
+}
 .logo {
   display: flex;
   justify-content: center;
-  margin-top: -200px;
+  margin-top: -240px;
 }
 
 .logo img {

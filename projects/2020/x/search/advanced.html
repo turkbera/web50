@@ -1,32 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <title>Search</title>
-        <link rel = "stylesheet" href  ="styles.css">
-    </head>
-    <body>
-        <div class = "mainSearch">
-            <div class = roundedBar>
-                <form action="https://www.google.com/search">
-                    <input type="text" class = roundedBar2 name="q">
-                </form>
-            </div>
-            <div class = submitButton>
-                <form action="https://www.google.com/search">
-                    <input type="submit" class = submitButton2 value="Google Search">
-                </form>
-                <form action="https://www.google.com/doodles">
-                    <input type="submit" class = submitButton2 value="I may be lucky!">
-                </form>
-            </div>
-            <div class = "logo">
-                <img src= "../search/googleLogo.png" alt=" Google Logo">
-            </div>
-        </div>
-        <div class = "buttonContainer" >
-            <a href="images.html" class="images"> Google Images</a>
-            <a href="advanced.html" class="advanced"> Advanced Search</a>
-        </div>
-        
-    </body>
+<head>
+  <title>Search</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="advancedSearch">
+    <h1>Advanced Search</h1>
+    <form action="https://www.google.com/search">
+      <div class="inputContainer">
+        <label for="as_q">All these words:</label>
+        <input type="text" name="as_q" id="as_q">
+      </div>
+      <div class="inputContainer">
+        <label for="as_epq">This exact word or phrase:</label>
+        <input type="text" name="as_epq" id="as_epq">
+      </div>
+      <div class="inputContainer">
+        <label for="as_oq">Any of these words:</label>
+        <input type="text" name="as_oq" id="as_oq">
+      </div>
+      <div class="inputContainer">
+        <label for="as_eq">None of these words:</label>
+        <input type="text" name="as_eq" id="as_eq">
+      </div>
+      <div class="advancedSearchButton">
+        <input type="submit" class="advancedSearchButtonInput" value="Advanced Search">
+      </div>
+    </form>
+  </div>
+  <div class="buttonContainer">
+    <a href="index.html" class="images">Back to Google</a>
+  </div>
+</body>
 </html>
