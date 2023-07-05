@@ -1,31 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Search</title>
+  <title>Google Advanced Search</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="advancedSearch">
-    <h1>Advanced Search</h1>
+    <div class = "header">Advanced Search</div>
+    <div class = "headerLine"> </div>
     <form action="https://www.google.com/search">
-      <div class="inputContainer">
-        <label for="as_q">All these words:</label>
-        <input type="text" name="as_q" id="as_q">
-      </div>
-      <div class="inputContainer">
-        <label for="as_epq">This exact word or phrase:</label>
-        <input type="text" name="as_epq" id="as_epq">
-      </div>
-      <div class="inputContainer">
-        <label for="as_oq">Any of these words:</label>
-        <input type="text" name="as_oq" id="as_oq">
-      </div>
-      <div class="inputContainer">
-        <label for="as_eq">None of these words:</label>
-        <input type="text" name="as_eq" id="as_eq">
-      </div>
-      <div class="advancedSearchButton">
-        <input type="submit" class="advancedSearchButtonInput" value="Advanced Search">
+      <div class="allBlocks">
+        <div class="findPages">
+          <div class = findPagesInner>
+            <span>Find pages with...</span>
+          </div>
+        </div>
+        <div>
+          <label for="as_q">All these words:</label>
+        </div>
+        <div class = "contCont">
+          <div class="inputContainer">
+            <input class = "inputBar" type="text" name="as_q" id="as_q">
+          </div>
+        </div>
+        <div>
+          <label for="as_epq">This exact word or phrase:</label>
+        </div>
+        <div class = "contCont">
+          <div class="inputContainer">
+            <input class = "inputBar" type="text" name="as_epq" id="as_epq">
+          </div>
+        </div>
+        <div>
+          <label for="as_oq">Any of these words:</label>
+        </div>
+        <div class = "contCont">
+          <div class="inputContainer">
+            <input class = "inputBar" type="text" name="as_oq" id="as_oq">
+          </div>
+        </div>
+        <div>
+          <label for="as_eq">None of these words:</label>
+        </div>
+        <div class = "contCont">
+          <div class="inputContainer">
+            <input class = "inputBar" type="text" name="as_eq" id="as_eq">
+          </div>
+        </div>
+       </div>
+        <div class="advancedSearchButton">
+          <input type="submit" class="advancedSearchButtonInput" value="Advanced Search">
+        </div>
       </div>
     </form>
   </div>
