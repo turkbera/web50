@@ -5,7 +5,11 @@
 {% endblock %}
 
 {% block body %}
-    
-    {{entry|safe}}
-
+    <div class="content">
+        {{ entry|safe }}
+    </div>
+    <div>
+        <a href="{% url 'encyclopedia:editPage' entry=title %}" class="btn btn-primary">Edit</a>
+    </div>
 {% endblock %}
+
