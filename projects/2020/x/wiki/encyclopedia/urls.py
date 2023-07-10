@@ -1,8 +1,10 @@
 from django.urls import path
 
 from . import views
-
+app_name = "encyclopedia"
 urlpatterns = [
     path("", views.index, name="index"),
-    path("<str:entry>", views.entry, name= "entry")
+    path("newEntry", views.newPage, name= "newPage"),
+    path("wiki/<str:entry>", views.entry, name="entry"),
+    path("randomPage/", views.randomPage, name="randomPage")
     ]

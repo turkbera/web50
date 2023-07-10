@@ -1,8 +1,11 @@
 from django.shortcuts import render
+from django.urls import reverse
+from django.http import HttpResponseRedirect
+from django import forms
+from django.shortcuts import redirect
 import re
-
+import random
 from . import util
-
 
 def index(request):
     return render(request, "encyclopedia/index.html", {
@@ -19,8 +22,9 @@ def entry(request, entry):
             title = "Untitled"  # Default title if no heading is found
         return render(request, "encyclopedia/entry.html", {"entry": html, "title": title})
     else:
-        render(request, "encyclopedia/error.html", {"error": "Entry not found"})
-
+        return render(request, "encyclopedia/newPage.html", {
+            "form":NewEntryForm()
+        })
 def markDown2Html(entry):
     html = util.get_entry(entry)
     #headings
@@ -36,3 +40,45 @@ def markDown2Html(entry):
     #paragraph
     html = re.sub(r'^([^<\n].+)$', r'<p>\1</p>', html, flags=re.MULTILINE)
     return html
+
+class NewEntryForm(forms.Form):
+    title = forms.CharField(label="Title of New Entry")
+    content = forms.CharField(widget=forms.Textarea)
+
+    def is_valid(self):
+        valid = super().is_valid()
+        if valid:
+            content = self.cleaned_data.get('content')
+            if not re.search(r'^#\s+.+', content, re.MULTILINE):
+                self.add_error('content', 'The content must contain a Markdown heading (#)')
+                return False
+        return valid
+
+
+def newPage(request):
+    if request.method == "POST":
+        form = NewEntryForm(request.POST)
+        if form.is_valid():
+            if form.cleaned_data['title'] in util.list_entries():
+                form.add_error('title', 'This title already exists.')
+                return render(request, "encyclopedia/newPage.html", {
+                "form": form
+                })            
+            else:
+                title = form.cleaned_data['title']
+                content = form.cleaned_data['content']
+                util.save_entry(title, content)
+                return HttpResponseRedirect(reverse("encyclopedia:entry", args=[content]))
+        else:
+            return render(request, "encyclopedia/newPage.html", {
+                "form": form
+                })
+    else:
+        return render(request, "encyclopedia/newPage.html", {
+            "form": NewEntryForm()
+        })
+
+def randomPage(request):
+    entries = util.list_entries()
+    random_entry = random.choice(entries)
+    return HttpResponseRedirect(reverse("encyclopedia:entry", args=(random_entry,)))
