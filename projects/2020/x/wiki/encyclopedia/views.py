@@ -15,9 +15,7 @@ def markDown2Html(entry):
     html = util.get_entry(entry)
     #headings
     # Handle headings
-    html = re.sub(r'^(#+)\s*(.+)', r'<h1>\2</h1>', html, flags=re.MULTILINE)    
-    html = re.sub(r'^##\s*(.+)', r'<h2>\1</h2>', html, flags=re.MULTILINE)
-    html = re.sub(r'^###\s*(.+)', r'<h3>\1</h3>', html, flags=re.MULTILINE)
+    html = re.sub(r'^(#+)\s*(.+)', lambda match: f'<h{len(match.group(1))}>{match.group(2)}</h{len(match.group(1))}>', html, flags=re.MULTILINE)
     #bold
     html = re.sub(r'\*\*(.*?)\*\*', r'<strong>\1</strong>', html)
     #unordered list
@@ -38,9 +36,7 @@ def entry(request, entry):
             title = "Untitled"  # Default title if no heading is found
         return render(request, "encyclopedia/entry.html", {"entry": html, "title": title})
     else:
-        return render(request, "encyclopedia/newPage.html", {
-            "form":NewEntryForm()
-        })
+        return render(request, "encyclopedia/error.html")
 
 class NewEntryForm(forms.Form):
     title = forms.CharField(label="Title of New Entry", widget=forms.TextInput(attrs={"class": "form-control"}))
