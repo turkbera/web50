@@ -49,9 +49,16 @@ class NewEntryForm(forms.Form):
     def is_valid(self):
         valid = super().is_valid()
         if valid:
+            title = self.cleaned_data.get('title')
             content = self.cleaned_data.get('content')
+            title_match = (re.search(r'^#\s*(.+)', content, re.MULTILINE))
+            print(title)
+            print(title_match)
             if not re.search(r'^#\s+.+', content, re.MULTILINE):
-                self.add_error('content', 'The content must contain a Markdown heading (#)')
+                self.add_error('content', 'The content must start with a Markdown heading (# ) and additional whitespace')
+                return False
+            if title.strip() != title_match.group(1).strip():
+                self.add_error('content', 'The title in the title part and markdown part should match!')
                 return False
         return valid
 
