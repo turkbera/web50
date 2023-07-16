@@ -1,0 +1,49 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Active Listings</h2>
+    {% for auction in auctions %}
+    <style>
+        .auction-detail {
+            display: flex;
+            overflow: hidden;
+            border: 1px solid #ccc;
+            border-width: 3px;
+            border-radius: 4px;
+            max-width: 600px;
+            margin: 0 auto;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            margin: 10px;
+            justify-content: flex-start;
+        }
+    
+        .auction-info {
+            flex: 1;
+            margin-right: 20px;
+        }
+    
+        .auction-photo {
+            max-width: 200px;
+            max-height: 200px;
+        }
+    </style>
+    
+    <a href="{% url 'auctionDetail' auction.id %}" class="auction-detail">
+        <div class="auction-info">
+            <h2>{{ auction.name }}</h2>
+            <p>{{ auction.description }}</p>
+            <p>Price: ${{ auction.price }}</p>
+        </div>
+        <div>
+            {% if auction.imageUrl %}
+                <img class="auction-photo" src="{{ auction.imageUrl }}" alt="Auction Photo">
+            {% else %}
+                <p>No photo available</p>
+            {% endif %}
+        </div>
+    </a>
+    
+{% endfor %}  
+{% endblock %}

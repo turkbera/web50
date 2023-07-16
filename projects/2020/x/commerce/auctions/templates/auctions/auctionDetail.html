@@ -1,0 +1,63 @@
+{% extends "auctions/layout.html" %}
+{% block body %}
+
+<h2>{{ auction.name }}</h2>
+{% if auction.imageUrl %}
+<style>
+    .auction-photo {
+        max-width: 400px;
+        max-height: 400px;
+    }
+</style>
+    <img class = "auction-photo" src="{{ auction.imageUrl }}" alt="Auction Photo">
+{% else %}
+    <p>No photo available</p>
+{% endif %}
+<p>{{ auction.description }}</p>
+{% if message %}
+        <div>{{ message }}</div>
+{% endif %}
+<p>Price: ${{ auction.price }}</p>
+<form action="{% url 'auctionDetail' auction.id %}" method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        Give a price greater than the current one.
+        <input class="form-control" type="number" name="bid" placeholder="Bid">
+    </div>
+    <button class="btn btn-primary" type="submit" name="bid-submit" value="1">Bid</button>
+</form>
+
+<form action="{% url 'auctionDetail' auction.id %}" method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        Add a comment:
+        <textarea class="form-control" name="comment" rows="4" placeholder="Your comment"></textarea>
+    </div>
+    <button class="btn btn-primary" type="submit" name="comment-submit" value="1">Comment</button>
+</form>
+
+<hr>
+
+<h3>Comments:</h3>
+
+{% if comments %}
+{% with has_comments=False %}
+    <ul class="list-group">
+        {% for comment in comments %}
+        {% if auction.id == comment.auction.id%}
+            {% with has_comments=True %}
+            <li class="list-group-item">
+                <strong>{{ comment.user.username }}</strong>
+                <p>{{ comment.comment }}</p>
+                <span class="comment-time">{{ comment.timestamp }}</span>
+            </li>
+            {% endwith %}
+        {%endif%}
+        {% endfor %}
+    </ul>
+    {%endwith%}
+{%endif%}
+
+
+
+{% endblock %}
