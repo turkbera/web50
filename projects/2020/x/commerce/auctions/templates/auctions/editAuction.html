@@ -1,0 +1,40 @@
+{% extends "auctions/layout.html" %}
+{% block body %}
+
+<h2>Edit Auction</h2>
+{% if message %}
+<div class="alert alert-warning">{{ message }}</div>
+{% endif %}
+
+<form action="{% url 'editAuction' auction.id %}" method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="name">Name</label>
+        <input class="form-control" type="text" name="name" value="{{ auction.name }}" required>
+    </div>
+    <div class="form-group">
+        <label for="category">Category:</label>
+        <select name="category" class="form-control">
+          {% for category_value, category_label in categories %}
+            <option value="{{ category_value }}">{{ category_label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    <div class="form-group">
+        <label for="price">Price</label>
+        <input class="form-control" type="number" name="price" value="{{ auction.price }}" required>
+    </div>
+    <div class="form-group">
+        <label for="description">Description</label>
+        <textarea class="form-control" name="description" rows="4" required>{{ auction.description }}</textarea>
+    </div>
+    <div class="form-group">
+        <label for="imageUrl">Image URL</label>
+        <input class="form-control" type="url" name="imageUrl" value="{{ auction.imageUrl }}">
+    </div>
+    <button class="btn btn-primary" type="submit">Save Changes</button>
+    <button class="btn btn-danger" type="submit" name="delete">Delete Auction</button>
+
+</form>
+
+{% endblock %}

@@ -1,3 +1,27 @@
 body {
     padding: 10px;
 }
+.auction-detail {
+    display: flex;
+    overflow: hidden;
+    border: 1px solid #ccc;
+    border-width: 3px;
+    border-radius: 4px;
+    max-width: 600px;
+    margin: 0 auto;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    margin: 10px;
+    justify-content: flex-start;
+}
+
+.auction-info {
+    flex: 1;
+    margin-right: 20px;
+}
+
+.auction-photo {
+    max-width: 200px;
+    max-height: 200px;
+}

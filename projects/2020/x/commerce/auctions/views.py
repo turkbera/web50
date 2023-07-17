@@ -3,8 +3,10 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
 
-from .models import User, Auction, Bid, Comment
+
+from .models import User, Auction, Bid, Comment, Watchlist
 
 
 def index(request):
@@ -64,14 +66,20 @@ def register(request):
         return render(request, "auctions/register.html")
 
 def createAuction(request):
+    categories = Auction.CATEGORY_CHOICES
     if request.method =="POST":
         name = request.POST["name"]
         price = request.POST["price"]
         description = request.POST["description"]
         user_id = request.user
         imageUrl = request.POST["imageUrl"]
+        category = request.POST["category"]
+        if not name or not price:
+            return render(request, "auctions/create.html", {
+                "message": "Name and price are required fields."
+            })
         try:
-            auction = Auction(name=name, price = price, user = user_id, description = description, imageUrl = imageUrl)
+            auction = Auction(name=name, price = price, user = user_id, description = description, imageUrl = imageUrl, category=category)
         except IntegrityError:
             return render(request, "auctions/create.html", {
                 "message": "Auction name already taken."
@@ -79,7 +87,10 @@ def createAuction(request):
         auction.save()
         return HttpResponseRedirect(reverse("index"))
     else:
-        return render(request, "auctions/create.html")
+        print(categories)
+        return render(request, "auctions/create.html", {
+            "categories": categories        
+            })
     
 
 def auctionDetail(request, auction_id):
@@ -87,14 +98,20 @@ def auctionDetail(request, auction_id):
         auction = Auction.objects.get(pk=auction_id)
     except Auction.DoesNotExist:
         auction = None
-
     if not auction:
         return render(request, "auctions/auctionDetail.html", {
             "message": "Auction not found.",
-            "comments": Comment.objects.all()
+            "comments": Comment.objects.all(),
         })
-
+    watchlistItems = Watchlist.objects.filter(user=request.user)
+    auctions = []
+    for item in watchlistItems:
+        auctions.extend(item.auction.all())
     if request.method == "POST":
+        watchlistItems = Watchlist.objects.filter(user=request.user) 
+        auctions = []
+        for item in watchlistItems:
+            auctions.extend(item.auction.all())
         if "bid-submit" in request.POST:
             bid = int(request.POST.get("bid", 0))
             bidMo = Bid(auction=auction, bid=bid, user=request.user)
@@ -105,13 +122,15 @@ def auctionDetail(request, auction_id):
                 return render(request, "auctions/auctionDetail.html", {
                     "auction": auction,
                     "message": "Currently, you are winning the bid.",
-                    "comments": Comment.objects.all()
+                    "comments": Comment.objects.all(),
+                    "watchlistItems": auctions
                 })
             else:
                 return render(request, "auctions/auctionDetail.html", {
                     "auction": auction,
                     "message": "Bid is not greater than the current price.",
-                    "comments": Comment.objects.all()
+                    "comments": Comment.objects.all(),
+                    "watchlistItems": auctions
                 })
         elif "comment-submit" in request.POST:
             commentText = request.POST.get("comment")
@@ -120,10 +139,98 @@ def auctionDetail(request, auction_id):
             return render(request, "auctions/auctionDetail.html", {
                 "auction": auction,
                 "message": "Comment added successfully.",
-                "comments": Comment.objects.all()
+                "comments": Comment.objects.all(),
+                "watchlistItems": auctions
             })
+        elif "watchlist-submit" in request.POST:
+            watchlist = Watchlist.objects.create(user = request.user)
+            watchlist.auction.add(auction)
+            watchlist.save()
+            watchlistItems = Watchlist.objects.filter(user=request.user) 
+            auctions = []
+            for item in watchlistItems:
+                auctions.extend(item.auction.all())
+            return render(request, "auctions/auctionDetail.html", {
+            "auction": auction,
+            "message": "Added to watchlist.",
+            "comments": Comment.objects.all(),
+            "watchlistItems": auctions
+            })
+        elif "watchlist-delete" in request.POST:
+            watchlist = Watchlist.objects.get(user = request.user, auction=auction)
+            watchlist.auction.remove(auction)
+            watchlistItems = Watchlist.objects.filter(user=request.user) 
+            auctions = []
+            for item in watchlistItems:
+                auctions.extend(item.auction.all())
+            print(auctions)
+            return render(request, "auctions/auctionDetail.html", {
+            "auction": auction,
+            "message": "Deleted from wathclist.",
+            "comments": Comment.objects.all(),
+            "watchlistItems": auctions
+            })
+
 
     return render(request, "auctions/auctionDetail.html", {
         "auction": auction,
-        "comments": Comment.objects.all()
+        "comments": Comment.objects.all(),
+        "watchlistItems": auctions
     })
+
+@login_required
+def watchlist(request):
+    watchlistItems = Watchlist.objects.filter(user=request.user)
+    auctions = []
+    for item in watchlistItems:
+        auctions.extend(item.auction.all())
+    return render(request, "auctions/watchlist.html", {
+        "watchlistItems": auctions
+    })
+@login_required
+def editAuction(request, auction_id):
+    categories = Auction.CATEGORY_CHOICES
+    try:
+        auction = Auction.objects.get(pk=auction_id)
+    except Auction.DoesNotExist:
+        auction = None
+
+    # Check if the auction exists and if the user is the creator
+    if not auction or auction.user != request.user:
+        return render(request, "auctions/error.html", {
+            "message": "Auction not found or you are not the creator."
+        })
+
+    if request.method == "POST":
+        # Check if the user clicked the delete button
+        if "delete" in request.POST:
+            auction.delete()
+            return HttpResponseRedirect(reverse("index"), {
+                "message" : "Auction Deleted"
+            })
+
+        # Update the auction details
+        auction.name = request.POST["name"]
+        auction.price = request.POST["price"]
+        auction.description = request.POST["description"]
+        auction.imageUrl = request.POST["imageUrl"]
+        auction.category = request.POST["category"]
+        auction.save()
+        return HttpResponseRedirect(reverse("auctionDetail", args=[auction.id]))
+
+    return render(request, "auctions/editAuction.html", {
+        "auction": auction,
+        "categories":categories
+    })
+@login_required
+def myAuctions(request):
+    userAuctions = Auction.objects.filter(user=request.user)
+    return render(request, "auctions/myAuctions.html", {"userAuctions": userAuctions})
+
+def categoryList(request):
+    categories = Auction.CATEGORY_CHOICES
+    return render(request, "auctions/categoryList.html", {"categories": categories})
+
+def categoryDetail(request, category):
+    listings = Auction.objects.filter(category=category)
+    return render(request, "auctions/categoryDetail.html", {"category": category, "auctions": listings})

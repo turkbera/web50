@@ -13,20 +13,45 @@
 {% else %}
     <p>No photo available</p>
 {% endif %}
+<hr>
+<strong>Category:</strong>
+<p>{{ auction.category }}</p>
+<strong>Description:</strong>
 <p>{{ auction.description }}</p>
 {% if message %}
-        <div>{{ message }}</div>
+<div class="alert alert-warning">{{ message }}</div>
 {% endif %}
-<p>Price: ${{ auction.price }}</p>
-<form action="{% url 'auctionDetail' auction.id %}" method="post">
-    {% csrf_token %}
-    <div class="form-group">
-        Give a price greater than the current one.
-        <input class="form-control" type="number" name="bid" placeholder="Bid">
-    </div>
-    <button class="btn btn-primary" type="submit" name="bid-submit" value="1">Bid</button>
-</form>
 
+    <strong>Price:</strong>
+    <p>${{ auction.price }}
+    {% if user.is_authenticated %}
+        {% if auction in watchlistItems %}
+            <p>This auction is already in your watchlist.</p>
+            <form action="{% url 'auctionDetail' auction.id %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="add">
+                <button type="submit" class="btn btn-primary" name = "watchlist-delete">Delete from Watchlist</button>
+            </form>
+        {% else %}
+            <form action="{% url 'auctionDetail' auction.id %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="delete">
+                <button type="submit" class="btn btn-primary" name = "watchlist-submit">Add to Watchlist</button>
+            </form>
+        {% endif %}
+    {%endif%}
+</p>
+{% if user.is_authenticated %}
+    <form action="{% url 'auctionDetail' auction.id %}" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            Give a price greater than the current one.
+            <input class="form-control" type="number" name="bid" placeholder="Bid">
+        </div>
+        <button class="btn btn-primary" type="submit" name="bid-submit" value="1">Bid</button>
+    </form>
+{%endif%}
+{% if user.is_authenticated %}
 <form action="{% url 'auctionDetail' auction.id %}" method="post">
     {% csrf_token %}
     <div class="form-group">
@@ -35,7 +60,10 @@
     </div>
     <button class="btn btn-primary" type="submit" name="comment-submit" value="1">Comment</button>
 </form>
-
+{% if request.user == auction.user %}
+    <a href="{% url 'editAuction' auction.id %}" class="btn btn-primary">Edit Auction</a>
+{% endif %}
+{%endif%}
 <hr>
 
 <h3>Comments:</h3>
