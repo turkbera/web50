@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
-
+import django
 
 from .models import User, Auction, Bid, Comment, Watchlist
 
@@ -114,10 +114,15 @@ def auctionDetail(request, auction_id):
             "comments": Comment.objects.all(),
         })
     last_bid = Bid.objects.filter(auction=auction).order_by("-timestamp").first()
-    watchlistItems = Watchlist.objects.filter(user=request.user) 
-    auctions = []
-    for item in watchlistItems:
-        auctions.extend(item.auction.all())
+    print(request.user)
+    print(django.contrib.auth.models.AnonymousUser)
+    if not request.user.is_authenticated:
+        auctions=[]
+    else:
+        watchlistItems = Watchlist.objects.filter(user=request.user) 
+        auctions = []
+        for item in watchlistItems:
+            auctions.extend(item.auction.all())
     if request.method == "POST":
         watchlistItems = Watchlist.objects.filter(user=request.user) 
         auctions = []
