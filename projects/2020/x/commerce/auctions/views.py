@@ -10,8 +10,18 @@ from .models import User, Auction, Bid, Comment, Watchlist
 
 
 def index(request):
+    activeAuctions = Auction.objects.filter(isOpen=True)
     return render(request, "auctions/index.html", {
-        "auctions": Auction.objects.all()
+        "auctions": Auction.objects.all(),
+        "activeAuctions": activeAuctions
+    })
+
+def closedAuctions(request):
+    closedAuctions = Auction.objects.filter(isOpen=False)
+    print(closedAuctions)
+    return render(request, "auctions/closedAuctions.html", {
+        "auctions": Auction.objects.all(),
+        "closedAuctions": closedAuctions
     })
 
 def login_view(request):
@@ -103,7 +113,8 @@ def auctionDetail(request, auction_id):
             "message": "Auction not found.",
             "comments": Comment.objects.all(),
         })
-    watchlistItems = Watchlist.objects.filter(user=request.user)
+    last_bid = Bid.objects.filter(auction=auction).order_by("-timestamp").first()
+    watchlistItems = Watchlist.objects.filter(user=request.user) 
     auctions = []
     for item in watchlistItems:
         auctions.extend(item.auction.all())
@@ -116,21 +127,29 @@ def auctionDetail(request, auction_id):
             bid = int(request.POST.get("bid", 0))
             bidMo = Bid(auction=auction, bid=bid, user=request.user)
             bidMo.save()
+            last_bid = Bid.objects.filter(auction=auction).order_by("-timestamp").first()
+            if last_bid and not last_bid.is_accepted:
+            # Handle the case where there is no accepted bid or no bid at all
+                last_bid = None
+            print(last_bid)
             if bid > auction.price:
                 auction.price = bid
                 auction.save()
                 return render(request, "auctions/auctionDetail.html", {
                     "auction": auction,
-                    "message": "Currently, you are winning the bid.",
+                    "message": "Yuppi, you made the best offer.",
                     "comments": Comment.objects.all(),
-                    "watchlistItems": auctions
+                    "watchlistItems": auctions,
+                    "winner":last_bid
                 })
             else:
+                print("Bid is not greater than the current price.")
                 return render(request, "auctions/auctionDetail.html", {
                     "auction": auction,
                     "message": "Bid is not greater than the current price.",
                     "comments": Comment.objects.all(),
-                    "watchlistItems": auctions
+                    "watchlistItems": auctions,
+                    "winner":last_bid
                 })
         elif "comment-submit" in request.POST:
             commentText = request.POST.get("comment")
@@ -140,7 +159,8 @@ def auctionDetail(request, auction_id):
                 "auction": auction,
                 "message": "Comment added successfully.",
                 "comments": Comment.objects.all(),
-                "watchlistItems": auctions
+                "watchlistItems": auctions,
+                "winner":last_bid
             })
         elif "watchlist-submit" in request.POST:
             watchlist = Watchlist.objects.create(user = request.user)
@@ -154,7 +174,8 @@ def auctionDetail(request, auction_id):
             "auction": auction,
             "message": "Added to watchlist.",
             "comments": Comment.objects.all(),
-            "watchlistItems": auctions
+            "watchlistItems": auctions,
+            "winner":last_bid
             })
         elif "watchlist-delete" in request.POST:
             watchlist = Watchlist.objects.get(user = request.user, auction=auction)
@@ -168,15 +189,28 @@ def auctionDetail(request, auction_id):
             "auction": auction,
             "message": "Deleted from wathclist.",
             "comments": Comment.objects.all(),
-            "watchlistItems": auctions
+            "watchlistItems": auctions,
+            "winner":last_bid
             })
-
+        elif "close-auction" in request.POST:
+            if auction.user == request.user:
+                auction.isOpen = False
+                auction.save()
+                last_bid = Bid.objects.filter(auction=auction).order_by("-timestamp").first()
+                return render(request, "auctions/auctionDetail.html", {
+                        "auction": auction,
+                        "comments": Comment.objects.all(),
+                        "message": "Auction is closed.",
+                        "watchlistItems": auctions,
+                        "winner":last_bid
+                    })
 
     return render(request, "auctions/auctionDetail.html", {
         "auction": auction,
-        "comments": Comment.objects.all(),
-        "watchlistItems": auctions
-    })
+        "comments": Comment.objects.all() ,
+        "winner":last_bid,
+        "watchlistItems":auctions
+        })
 
 @login_required
 def watchlist(request):

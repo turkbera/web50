@@ -9,39 +9,63 @@
         max-height: 400px;
     }
 </style>
-    <img class = "auction-photo" src="{{ auction.imageUrl }}" alt="Auction Photo">
+    <img class="auction-photo" src="{{ auction.imageUrl }}" alt="Auction Photo">
 {% else %}
     <p>No photo available</p>
+{% endif %}
+{% if message %}
+<div class="alert alert-warning">{{ message }}</div>
 {% endif %}
 <hr>
 <strong>Category:</strong>
 <p>{{ auction.category }}</p>
 <strong>Description:</strong>
 <p>{{ auction.description }}</p>
-{% if message %}
-<div class="alert alert-warning">{{ message }}</div>
+<strong>Dealer:</strong>
+<p>{{ auction.user }}</p>
+
+
+{%if not auction.isOpen and winner.user == request.user%}
+    <div class="alert alert-warning">You have won this auction.</div>
+{%elif not auction.isOpen and winner.user != request.user%}
+    {% if winner.user == None%}
+        <div class="alert alert-warning">Auction is closed. Nobody has bid.</div>
+    {%else%}   
+        <div class="alert alert-warning">{{winner.user.username}} has won this auction.</div>
+
+    {%endif%}
+{%endif%}
+
+{%if auction.isOpen and winner.user == request.user%}
+    <div class="alert alert-warning">You are currently winning this auction.</div>
+{%elif auction.isOpen and winner.user != request.user%}
+    {% if winner == None%}
+        <div class="alert alert-warning">Auction is still open. Nobody has bid.</div>
+    {%else%}   
+        <div class="alert alert-warning">{{winner.user.username}} is currently winning this auction.</div>
+    {%endif%}
+{%endif%}
+<strong>Price:</strong>
+<p>${{ auction.price }}
+{% if user.is_authenticated and request.user != auction.user %}
+    {% if auction in watchlistItems %}
+        <div class="alert alert-warning">This auction is in your watchlist.</div>
+        <form action="{% url 'auctionDetail' auction.id %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="add">
+            <button type="submit" class="btn btn-primary" name="watchlist-delete">Delete from Watchlist</button>
+        </form>
+    {% else %}
+        <form action="{% url 'auctionDetail' auction.id %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="delete">
+            <button type="submit" class="btn btn-primary" name="watchlist-submit">Add to Watchlist</button>
+        </form>
+    {% endif %}
 {% endif %}
 
-    <strong>Price:</strong>
-    <p>${{ auction.price }}
-    {% if user.is_authenticated %}
-        {% if auction in watchlistItems %}
-            <p>This auction is already in your watchlist.</p>
-            <form action="{% url 'auctionDetail' auction.id %}" method="post">
-                {% csrf_token %}
-                <input type="hidden" name="action" value="add">
-                <button type="submit" class="btn btn-primary" name = "watchlist-delete">Delete from Watchlist</button>
-            </form>
-        {% else %}
-            <form action="{% url 'auctionDetail' auction.id %}" method="post">
-                {% csrf_token %}
-                <input type="hidden" name="action" value="delete">
-                <button type="submit" class="btn btn-primary" name = "watchlist-submit">Add to Watchlist</button>
-            </form>
-        {% endif %}
-    {%endif%}
 </p>
-{% if user.is_authenticated %}
+{% if user.is_authenticated and request.user != auction.user and auction.isOpen %}
     <form action="{% url 'auctionDetail' auction.id %}" method="post">
         {% csrf_token %}
         <div class="form-group">
@@ -50,7 +74,7 @@
         </div>
         <button class="btn btn-primary" type="submit" name="bid-submit" value="1">Bid</button>
     </form>
-{%endif%}
+{% endif %}
 {% if user.is_authenticated %}
 <form action="{% url 'auctionDetail' auction.id %}" method="post">
     {% csrf_token %}
@@ -60,32 +84,42 @@
     </div>
     <button class="btn btn-primary" type="submit" name="comment-submit" value="1">Comment</button>
 </form>
-{% if request.user == auction.user %}
-    <a href="{% url 'editAuction' auction.id %}" class="btn btn-primary">Edit Auction</a>
 {% endif %}
-{%endif%}
+<div class="d-flex justify-content-end">
+    {% if request.user == auction.user %}
+        <div class="btn-group mt-2">
+            <a href="{% url 'editAuction' auction.id %}" class="btn btn-primary">Manage Auction</a>
+            {% if auction.isOpen %}
+                <form action="{% url 'auctionDetail' auction.id %}" method="post">
+                    {% csrf_token %}
+                    <button class="btn btn-danger" type="submit" name="close-auction" value="1">Close Auction</button>
+                </form>    
+            {% else %}
+                <div class="alert alert-warning">Auction is closed.</div>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
 <hr>
 
 <h3>Comments:</h3>
 
 {% if comments %}
-{% with has_comments=False %}
-    <ul class="list-group">
-        {% for comment in comments %}
-        {% if auction.id == comment.auction.id%}
-            {% with has_comments=True %}
-            <li class="list-group-item">
-                <strong>{{ comment.user.username }}</strong>
-                <p>{{ comment.comment }}</p>
-                <span class="comment-time">{{ comment.timestamp }}</span>
-            </li>
-            {% endwith %}
-        {%endif%}
-        {% endfor %}
-    </ul>
-    {%endwith%}
-{%endif%}
-
-
+    {% with has_comments=False %}
+        <ul class="list-group">
+            {% for comment in comments %}
+                {% if auction.id == comment.auction.id %}
+                    {% with has_comments=True %}
+                        <li class="list-group-item">
+                            <strong>{{ comment.user.username }}</strong>
+                            <p>{{ comment.comment }}</p>
+                            <span class="comment-time">{{ comment.timestamp }}</span>
+                        </li>
+                    {% endwith %}
+                {% endif %}
+            {% endfor %}
+        </ul>
+    {% endwith %}
+{% endif %}
 
 {% endblock %}

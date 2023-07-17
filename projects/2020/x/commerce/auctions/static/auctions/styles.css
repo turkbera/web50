@@ -1,7 +1,15 @@
+/* styles.css */
+
 body {
-    padding: 10px;
-}
-.auction-detail {
+    font-family: Arial, sans-serif;
+  }
+  
+  h2 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }
+  
+  .auction-detail {
     display: flex;
     overflow: hidden;
     border: 1px solid #ccc;
@@ -14,14 +22,117 @@ body {
     color: inherit;
     margin: 10px;
     justify-content: flex-start;
-}
-
-.auction-info {
+  }
+  
+  .auction-info {
     flex: 1;
     margin-right: 20px;
-}
-
-.auction-photo {
+  }
+  
+  .auction-photo {
     max-width: 200px;
     max-height: 200px;
-}
+  }
+  
+  .alert {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+  }
+  
+  .alert-warning {
+    background-color: #fff3cd;
+    border-color: #ffeeba;
+    color: #856404;
+  }
+  
+  .comment-section {
+    margin-top: 20px;
+  }
+  
+  .comment {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .comment-info {
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .comment-text {
+    margin-top: 5px;
+  }
+  
+  .bid-section {
+    margin-top: 20px;
+  }
+  
+  .bid-form {
+    margin-bottom: 10px;
+  }
+  
+  .bid-submit {
+    margin-left: 10px;
+  }
+  
+  .watchlist-section {
+    margin-top: 20px;
+  }
+  
+  .watchlist-submit {
+    margin-bottom: 10px;
+  }
+  
+  .watchlist-delete {
+    margin-left: 10px;
+  }
+  
+  .close-auction {
+    margin-top: 20px;
+  }
+  
+  /* Layout */
+  
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -15px;
+    margin-left: -15px;
+  }
+  
+  .col {
+    flex: 1;
+    padding-right: 15px;
+    padding-left: 15px;
+  }
+  
+  .col-6 {
+    flex-basis: 50%;
+    max-width: 50%;
+  }
+  
+  .col-12 {
+    flex-basis: 100%;
+    max-width: 100%;
+  }
+  
+  @media (max-width: 767px) {
+    .col {
+      flex-basis: 100%;
+      max-width: 100%;
+    }
+  }
+  
+  .text-center {
+    text-align: center;
+  }
+  

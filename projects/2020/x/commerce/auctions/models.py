@@ -25,13 +25,17 @@ class Auction(models.Model):
     imageUrl = models.URLField(blank=True)
     timestamp = models.DateTimeField(default=datetime.now, blank=True)  # Add timestamp field
     category = models.CharField(max_length=100, choices=CATEGORY_CHOICES, default='default')
-    
+    isOpen = models.BooleanField(default="True")
+
 class Bid(models.Model):
     auction = models.ForeignKey(Auction, on_delete= models.CASCADE)
     bid = models.IntegerField(max_length=10)
     user = models.ForeignKey(User, on_delete= models.CASCADE)
     timestamp = models.DateTimeField(default=datetime.now, blank=True)  # Add timestamp field
 
+    @property
+    def is_accepted(self):
+        return self.bid > self.auction.price
 class Comment(models.Model):
     auction = models.ForeignKey(Auction, on_delete= models.CASCADE)
     comment = models.TextField(max_length=150)

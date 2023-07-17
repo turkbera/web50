@@ -14,5 +14,5 @@ urlpatterns = [
     path("myauctions/", views.myAuctions, name="myAuctions"),
     path("categories/", views.categoryList, name="categoryList"),
     path("categories/<str:category>/", views.categoryDetail, name="categoryDetail"),
-
+    path("closed", views.closedAuctions, name="closedAuctions"),
 ]

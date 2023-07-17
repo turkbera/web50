@@ -1,7 +1,7 @@
 {% extends "auctions/layout.html" %}
 {% block body %}
 
-<h2>Watchlist</h2>
+<h2>My Auction Listings</h2>
 
 {% if userAuctions %}
     <ul>
@@ -50,7 +50,8 @@
         {%endfor%}
     </ul>
 {% else %}
-    <p>You did not list any auctions.</p>
+
+<div class="alert alert-warning">You did not list any auctions.</div>
 {% endif %}
 
 {% endblock %}

@@ -1,10 +1,10 @@
 {% extends "auctions/layout.html" %}
+
 {% block body %}
-  <h2>Category {{ category }} listings</h2>
-  {% if auctions %}
-    <ul>
-      {% for auction in auctions %}
-      <style>
+    <h2>Closed Listings</h2>
+    {%if closedAuctions%}
+    {% for auction in auctions %}
+    <style>
         .auction-detail {
             display: flex;
             overflow: hidden;
@@ -30,7 +30,7 @@
             max-height: 200px;
         }
     </style>
-    
+    {%if not auction.isOpen%}
     <a href="{% url 'auctionDetail' auction.id %}" class="auction-detail">
         <div class="auction-info">
             <h2>{{ auction.name }}</h2>
@@ -44,10 +44,12 @@
                 <p>No photo available</p>
             {% endif %}
         </div>
-    </a>      {% endfor %}
-    </ul>
-  {% else %}
+    </a>
+    {%endif%}
+    {% endfor %}  
+    {%else%}
+    <div class="alert alert-warning">There is no closed listing.</div>
+    {%endif%}
+    
 
-<div class="alert alert-warning">No active listings in this category.</div>
-  {% endif %}
 {% endblock %}
